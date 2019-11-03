@@ -1,0 +1,20 @@
+{
+  "name": "cdon-ongoing-delivery-note-sync",
+  "version": "0.1.0",
+  "description": "Fetches delivery notes from CDON and posts them to the corresponding orders in Ongoing",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "format": "prettier-eslint --write \"lib/**/*.js\" \"./index.js\" \"./config.js\" ",
+    "start": "node index.js"
+  },
+  "author": "Tommy Ivarsson",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.19.0"
+  },
+  "devDependencies": {
+    "eslint": "^5.5.0",
+    "prettier-eslint-cli": "^4.7.1"
+  }
+}

@@ -1,0 +1,6 @@
+# project specific
+config.js
+
+# user specific
+node_modules/
+.vscode/
