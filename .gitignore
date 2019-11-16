@@ -1,6 +1,9 @@
 # project specific
 config.js
 
+# artifacts
+.serverless
+
 # user specific
 node_modules/
 .vscode/

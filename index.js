@@ -1,67 +1,25 @@
-const cdon = require('./lib/cdon');
-const ongoing = require('./lib/ongoing');
-const { CDON_ADDRESSID } = require('./config');
+const sync = require('./sync');
 
-const mergeOrders = (cdonOrders, ongoingOrders) =>
-  cdonOrders.map(cdonOrder => {
-    const ongoingOrder = ongoingOrders.find(
-      ongoingOrder =>
-        ongoingOrder.orderNumber === cdonOrder.OrderId.toString(),
-    );
-    if (ongoingOrder) cdonOrder.OngoingId = ongoingOrder.orderId;
-    return cdonOrder;
-  });
+const {
+  CDON_ADDRESSID,
+  CDON_APIURL,
+  CDON_APIKEY,
+  ONGOING_APIURL,
+  ONGOING_GOODSOWNERID,
+  ONGOING_USERNAME,
+  ONGOING_PASSWORD,
+} = require('./config');
 
-const base64 = binary =>
-  Buffer.from(binary, 'binary').toString('base64');
-const cdonOrderToDeliveryNote = order => ({
-  OrderId: order.OrderId,
-  AddressId: CDON_ADDRESSID,
-  DeliveryNoteRows: order.OrderRows.map(row => ({
-    ProductId: row.ProductId,
-    ProductName: row.ProductName,
-    Quantity: row.Quantity,
-  })),
-});
+const cdonSettings = {
+  addressId: CDON_ADDRESSID,
+  apiUrl: CDON_APIURL,
+  apiKey: CDON_APIKEY,
+};
+const ongoingSettings = {
+  apiUrl: ONGOING_APIURL,
+  goodsOwnerId: ONGOING_GOODSOWNERID,
+  username: ONGOING_USERNAME,
+  password: ONGOING_PASSWORD,
+};
 
-Promise.all([cdon.pendingOrders(), ongoing.pendingOrders()])
-  .then(([cdonResponse, ongoingResponse]) => {
-    const cdonOrders = cdonResponse.data.map(
-      order => order.OrderDetails,
-    );
-    const ongoingOrders = ongoingResponse.data.map(order => ({
-      orderId: order.orderInfo.orderId,
-      orderNumber: order.orderInfo.orderNumber,
-    }));
-
-    const mergedOrders = mergeOrders(cdonOrders, ongoingOrders);
-
-    mergedOrders.forEach(order => {
-      const fileName = `CDON.${order.OrderId}.pdf`;
-      ongoing.orderFiles(order.OngoingId).then(({ data: files }) => {
-        if (!files.some(file => file.fileName.endsWith(fileName))) {
-          cdon
-            .deliveryNote(cdonOrderToDeliveryNote(order))
-            .then(({ data }) => {
-              ongoing
-                .uploadOrderFile(
-                  order.OngoingId,
-                  fileName,
-                  'application/pdf',
-                  base64(data),
-                )
-                .then(() =>
-                  console.log(
-                    `Uploaded ${fileName} to order ${order.OrderId}`,
-                  ),
-                );
-            });
-        } else {
-          console.log(
-            `Order ${order.OrderId} already has file ${fileName}`,
-          );
-        }
-      });
-    });
-  })
-  .catch(error => console.error(error));
+sync(cdonSettings, ongoingSettings);
