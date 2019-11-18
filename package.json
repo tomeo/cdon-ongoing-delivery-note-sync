@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "format": "prettier-eslint --write \"lib/**/*.js\" \"./index.js\" \"./config.js\" ",
+    "format": "prettier-eslint --write \"lib/**/*.js\" \"./index.js\" \"./config.js\" \"./sync.js\" \"./handler.js\"",
     "start": "node index.js"
   },
   "author": "Tommy Ivarsson",

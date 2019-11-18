@@ -11,55 +11,56 @@ const mergeOrders = (cdonOrders, ongoingOrders) =>
     return cdonOrder;
   });
 
-const base64 = binary =>
-  Buffer.from(binary, 'binary').toString('base64');
+const hasFile = (files, fileName) =>
+  files.some(file => file.fileName.endsWith(fileName));
 
-const cdonOrderToDeliveryNote = (order, addressId) => ({
-  OrderId: order.OrderId,
-  AddressId: addressId,
-  DeliveryNoteRows: order.OrderRows.map(row => ({
-    ProductId: row.ProductId,
-    ProductName: row.ProductName,
-    Quantity: row.Quantity,
-  })),
-});
+const handleOrder = async (order, cdonClient, ongoingClient) => {
+  const fileName = `CDON.${order.OrderId}.pdf`;
+  const files = await ongoingClient.orderFiles(order.OngoingId);
 
-module.exports = (cdonSettings, ongoingSettings) => {
+  if (hasFile(files, fileName)) {
+    console.log(`Order ${order.OrderId} HAS file ${fileName}`);
+  } else {
+    console.log(
+      `Order ${order.OrderId} DOES NOT have file ${fileName}`,
+    );
+    const pdfData = await cdonClient.deliveryNote(order);
+    await ongoingClient.uploadDeliveryNote(
+      order.OngoingId,
+      fileName,
+      pdfData,
+    );
+    console.log(`Uploaded ${fileName} to order ${order.OrderId}`);
+  }
+};
+
+const sync = async (cdonSettings, ongoingSettings) => {
   const cdonClient = new CDONClient(
     cdonSettings.apiUrl,
-    cdonSettings.apiKey);
+    cdonSettings.apiKey,
+    cdonSettings.addressId,
+  );
   const ongoingClient = new OngoingClient(
     ongoingSettings.apiUrl,
     ongoingSettings.goodsOwnerId,
     ongoingSettings.username,
-    ongoingSettings.password);
+    ongoingSettings.password,
+  );
 
-  return Promise.all([cdonClient.pendingOrders(), ongoingClient.pendingOrders()])
-  .then(([cdonResponse, ongoingResponse]) => {
-    const cdonOrders = cdonResponse.data.map(
-      order => order.OrderDetails,
-    );
-    console.log(`There are currently ${cdonOrders.length} pending CDON orders.`);
-    const ongoingOrders = ongoingResponse.data.map(order => ({
-      orderId: order.orderInfo.orderId,
-      orderNumber: order.orderInfo.orderNumber,
-    }));
+  const [cdonOrders, ongoingOrders] = await Promise.all([
+    cdonClient.pendingOrders(),
+    ongoingClient.pendingOrders(),
+  ]);
+  console.log(
+    `There are currently ${cdonOrders.length} pending CDON orders.`,
+  );
 
-    const mergedOrders = mergeOrders(cdonOrders, ongoingOrders);
+  const mergedOrders = mergeOrders(cdonOrders, ongoingOrders);
+  return Promise.all(
+    mergedOrders.map(order =>
+      handleOrder(order, cdonClient, ongoingClient),
+    ),
+  );
+};
 
-    mergedOrders.forEach(order => {
-      const fileName = `CDON.${order.OrderId}.pdf`;
-      ongoingClient.orderFiles(order.OngoingId).then(({ data: files }) => {
-        if (!files.some(file => file.fileName.endsWith(fileName))) {
-          cdonClient.deliveryNote(cdonOrderToDeliveryNote(order, cdonSettings.addressId))
-            .then(({ data }) => {
-              ongoingClient.uploadOrderFile(order.OngoingId, fileName, 'application/pdf', base64(data))
-                .then(() => console.log(`Uploaded ${fileName} to order ${order.OrderId}`));
-            });
-        } else {
-          console.log(`Order ${order.OrderId} already has file ${fileName}`);
-        }
-      });
-    });
-  }); 
-}
+module.exports = sync;

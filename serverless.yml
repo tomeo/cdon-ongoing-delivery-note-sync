@@ -20,6 +20,7 @@ package:
  exclude:
    - config.*
    - README.md
+   - index.js
 
 functions:
   ongoal:

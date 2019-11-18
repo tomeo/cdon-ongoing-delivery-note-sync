@@ -28,25 +28,33 @@ const keyPromise = ssm
       ONGOING.USERNAME,
       ONGOING.PASSWORD,
     ],
-    WithDecryption: true
+    WithDecryption: true,
   })
   .promise();
 
-module.exports.handler = async () => {
+exports.handler = async event => {
   const result = await keyPromise;
 
   const cdonSettings = {
-    addressid: result.Parameters.find(p => p.Name === CDON.ADDRESSID).Value,
-    apiUrl: result.Parameters.find(p => p.Name === CDON.ADMIN_URL).Value,
-    apiKey: result.Parameters.find(p => p.Name === CDON.API_KEY).Value,
+    addressId: result.Parameters.find(p => p.Name === CDON.ADDRESSID)
+      .Value,
+    apiUrl: result.Parameters.find(p => p.Name === CDON.ADMIN_URL)
+      .Value,
+    apiKey: result.Parameters.find(p => p.Name === CDON.API_KEY)
+      .Value,
   };
 
   const ongoingSettings = {
-    apiUrl: result.Parameters.find(p => p.Name === ONGOING.API_URL).Value,
-    goodsOwnerId: result.Parameters.find(p => p.Name === ONGOING.GOODS_OWNER_ID).Value,
-    username: result.Parameters.find(p => p.Name === ONGOING.USERNAME).Value,
-    password: result.Parameters.find(p => p.Name === ONGOING.PASSWORD).Value,
+    apiUrl: result.Parameters.find(p => p.Name === ONGOING.API_URL)
+      .Value,
+    goodsOwnerId: result.Parameters.find(
+      p => p.Name === ONGOING.GOODS_OWNER_ID,
+    ).Value,
+    username: result.Parameters.find(p => p.Name === ONGOING.USERNAME)
+      .Value,
+    password: result.Parameters.find(p => p.Name === ONGOING.PASSWORD)
+      .Value,
   };
 
-  await sync(cdonSettings, ongoingSettings);
+  return sync(cdonSettings, ongoingSettings);
 };

@@ -22,4 +22,4 @@ const ongoingSettings = {
   password: ONGOING_PASSWORD,
 };
 
-sync(cdonSettings, ongoingSettings);
+sync(cdonSettings, ongoingSettings).then(() => console.log('DONE'));
