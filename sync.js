@@ -1,5 +1,6 @@
 const CDONClient = require('./lib/cdonClient');
 const OngoingClient = require('./lib/ongoingClient');
+const createLogClient = require('./lib/slackClient');
 
 const mergeOrders = (cdonOrders, ongoingOrders) =>
   cdonOrders.map(cdonOrder => {
@@ -14,14 +15,19 @@ const mergeOrders = (cdonOrders, ongoingOrders) =>
 const hasFile = (files, fileName) =>
   files.some(file => file.fileName.endsWith(fileName));
 
-const handleOrder = async (order, cdonClient, ongoingClient) => {
+const handleOrder = async (
+  logger,
+  order,
+  cdonClient,
+  ongoingClient,
+) => {
   const fileName = `CDON.${order.OrderId}.pdf`;
   const files = await ongoingClient.orderFiles(order.OngoingId);
 
   if (hasFile(files, fileName)) {
-    console.log(`Order ${order.OrderId} HAS file ${fileName}`);
+    logger.log(`Order ${order.OrderId} HAS file ${fileName}`);
   } else {
-    console.log(
+    logger.log(
       `Order ${order.OrderId} DOES NOT have file ${fileName}`,
     );
     const pdfData = await cdonClient.deliveryNote(order);
@@ -30,11 +36,13 @@ const handleOrder = async (order, cdonClient, ongoingClient) => {
       fileName,
       pdfData,
     );
-    console.log(`Uploaded ${fileName} to order ${order.OrderId}`);
+    logger.log(`Uploaded ${fileName} to order ${order.OrderId}`);
   }
 };
 
-const sync = async (cdonSettings, ongoingSettings) => {
+const sync = async (cdonSettings, ongoingSettings, slackSettings) => {
+  const logger = createLogClient(slackSettings);
+  logger.log('Sync delivery notes from CDON to Ongoing');
   const cdonClient = new CDONClient(
     cdonSettings.apiUrl,
     cdonSettings.apiKey,
@@ -51,16 +59,18 @@ const sync = async (cdonSettings, ongoingSettings) => {
     cdonClient.pendingOrders(),
     ongoingClient.pendingOrders(),
   ]);
-  console.log(
+  logger.log(
     `There are currently ${cdonOrders.length} pending CDON orders.`,
   );
 
   const mergedOrders = mergeOrders(cdonOrders, ongoingOrders);
-  return Promise.all(
+  await Promise.all(
     mergedOrders.map(order =>
-      handleOrder(order, cdonClient, ongoingClient),
+      handleOrder(logger, order, cdonClient, ongoingClient),
     ),
   );
+
+  await logger.print();
 };
 
 module.exports = sync;

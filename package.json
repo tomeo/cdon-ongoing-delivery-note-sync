@@ -1,6 +1,6 @@
 {
   "name": "cdon-ongoing-delivery-note-sync",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Fetches delivery notes from CDON and posts them to the corresponding orders in Ongoing",
   "main": "index.js",
   "scripts": {

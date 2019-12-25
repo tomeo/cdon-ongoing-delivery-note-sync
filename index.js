@@ -8,6 +8,7 @@ const {
   ONGOING_GOODSOWNERID,
   ONGOING_USERNAME,
   ONGOING_PASSWORD,
+  SLACK_WEBHOOK,
 } = require('./config');
 
 const cdonSettings = {
@@ -21,5 +22,8 @@ const ongoingSettings = {
   username: ONGOING_USERNAME,
   password: ONGOING_PASSWORD,
 };
+const slackSettings = {
+  url: SLACK_WEBHOOK,
+};
 
-sync(cdonSettings, ongoingSettings).then(() => console.log('DONE'));
+sync(cdonSettings, ongoingSettings, slackSettings).then(() => {});

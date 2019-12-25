@@ -29,4 +29,7 @@ aws ssm put-parameter --name "/{{YOUR INSTANCE NAME}}/ongoing/apiurl" --value "{
 aws ssm put-parameter --name "/{{YOUR INSTANCE NAME}}/ongoing/goodsownerid" --value "{{YOUR GOODS OWNER ID}}" --type "SecureString"
 aws ssm put-parameter --name "/{{YOUR INSTANCE NAME}}/ongoing/username" --value "{{YOUR ONGOING USERNAME}}" --type "SecureString"
 aws ssm put-parameter --name "/{{YOUR INSTANCE NAME}}/ongoing/password" --value "{{YOUR ONGOING PASSWORD}}" --type "SecureString"
+
+# Slack parameters
+aws ssm put-parameter --name "/{{YOUR INSTANCE NAME}}/slack/omswebhook" --value "{{YOUR SLACK WEBHOOK}}" --type "SecureString"
 ```

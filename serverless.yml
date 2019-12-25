@@ -37,6 +37,8 @@ functions:
         Resource:
           - { "Fn::Join": ["", ["arn:aws:ssm:${self:provider.region}:", Ref: 'AWS::AccountId', ":parameter/ongoal/cdon/*"]] }
           - { "Fn::Join": ["", ["arn:aws:ssm:${self:provider.region}:", Ref: 'AWS::AccountId', ":parameter/ongoal/ongoing/*"]] }
+          - { "Fn::Join": ["", ["arn:aws:ssm:${self:provider.region}:", Ref: 'AWS::AccountId', ":parameter/ongoal/slack/*"]] }
+
   novellia:
     handler: handler.handler
     events:
@@ -51,3 +53,4 @@ functions:
         Resource:
           - { "Fn::Join": ["", ["arn:aws:ssm:${self:provider.region}:", Ref: 'AWS::AccountId', ":parameter/novellia/cdon/*"]] }
           - { "Fn::Join": ["", ["arn:aws:ssm:${self:provider.region}:", Ref: 'AWS::AccountId', ":parameter/novellia/ongoing/*"]] }
+          - { "Fn::Join": ["", ["arn:aws:ssm:${self:provider.region}:", Ref: 'AWS::AccountId', ":parameter/novellia/slack/*"]] }

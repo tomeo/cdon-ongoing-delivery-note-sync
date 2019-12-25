@@ -16,6 +16,10 @@ const ONGOING = {
   PASSWORD: `/${process.env.ACCOUNT}/ongoing/password`,
 };
 
+const SLACK = {
+  URL: `/${process.env.ACCOUNT}/slack/omswebhook`,
+};
+
 const ssm = new AWS.SSM();
 const keyPromise = ssm
   .getParameters({
@@ -27,6 +31,7 @@ const keyPromise = ssm
       ONGOING.GOODS_OWNER_ID,
       ONGOING.USERNAME,
       ONGOING.PASSWORD,
+      SLACK.URL,
     ],
     WithDecryption: true,
   })
@@ -56,5 +61,9 @@ exports.handler = async event => {
       .Value,
   };
 
-  return sync(cdonSettings, ongoingSettings);
+  const slackSettings = {
+    url: result.Parameters.find(p => p.Name === SLACK.URL).Value,
+  };
+
+  return sync(cdonSettings, ongoingSettings, slackSettings);
 };
