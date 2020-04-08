@@ -10,17 +10,27 @@ provider:
   region: eu-north-1
 
   iamRoleStatements:
-   - Effect: "Allow"
-     Action:
-       - "kms:Decrypt"
-     Resource:
-        - { "Fn::Join": ["", ["arn:aws:kms:${self:provider.region}:", Ref: 'AWS::AccountId', ":key/alias/aws/ssm"]] }
+    - Effect: 'Allow'
+      Action:
+        - 'kms:Decrypt'
+      Resource:
+        - {
+            'Fn::Join':
+              [
+                '',
+                [
+                  'arn:aws:kms:${self:provider.region}:',
+                  Ref: 'AWS::AccountId',
+                  ':key/alias/aws/ssm',
+                ],
+              ],
+          }
 
 package:
- exclude:
-   - config.*
-   - README.md
-   - index.js
+  exclude:
+    - config.*
+    - README.md
+    - index.js
 
 functions:
   ongoal:
@@ -31,13 +41,43 @@ functions:
       ACCOUNT: ongoal
     iamRoleStatementsInherit: true
     iamRoleStatements:
-      - Effect: "Allow"
+      - Effect: 'Allow'
         Action:
-          - "ssm:GetParameters"
+          - 'ssm:GetParameters'
         Resource:
-          - { "Fn::Join": ["", ["arn:aws:ssm:${self:provider.region}:", Ref: 'AWS::AccountId', ":parameter/ongoal/cdon/*"]] }
-          - { "Fn::Join": ["", ["arn:aws:ssm:${self:provider.region}:", Ref: 'AWS::AccountId', ":parameter/ongoal/ongoing/*"]] }
-          - { "Fn::Join": ["", ["arn:aws:ssm:${self:provider.region}:", Ref: 'AWS::AccountId', ":parameter/ongoal/slack/*"]] }
+          - {
+              'Fn::Join':
+                [
+                  '',
+                  [
+                    'arn:aws:ssm:${self:provider.region}:',
+                    Ref: 'AWS::AccountId',
+                    ':parameter/ongoal/cdon/*',
+                  ],
+                ],
+            }
+          - {
+              'Fn::Join':
+                [
+                  '',
+                  [
+                    'arn:aws:ssm:${self:provider.region}:',
+                    Ref: 'AWS::AccountId',
+                    ':parameter/ongoal/ongoing/*',
+                  ],
+                ],
+            }
+          - {
+              'Fn::Join':
+                [
+                  '',
+                  [
+                    'arn:aws:ssm:${self:provider.region}:',
+                    Ref: 'AWS::AccountId',
+                    ':parameter/ongoal/slack/*',
+                  ],
+                ],
+            }
 
   novellia:
     handler: handler.handler
@@ -47,10 +87,40 @@ functions:
       ACCOUNT: novellia
     iamRoleStatementsInherit: true
     iamRoleStatements:
-      - Effect: "Allow"
+      - Effect: 'Allow'
         Action:
-        - "ssm:GetParameters"
+          - 'ssm:GetParameters'
         Resource:
-          - { "Fn::Join": ["", ["arn:aws:ssm:${self:provider.region}:", Ref: 'AWS::AccountId', ":parameter/novellia/cdon/*"]] }
-          - { "Fn::Join": ["", ["arn:aws:ssm:${self:provider.region}:", Ref: 'AWS::AccountId', ":parameter/novellia/ongoing/*"]] }
-          - { "Fn::Join": ["", ["arn:aws:ssm:${self:provider.region}:", Ref: 'AWS::AccountId', ":parameter/novellia/slack/*"]] }
+          - {
+              'Fn::Join':
+                [
+                  '',
+                  [
+                    'arn:aws:ssm:${self:provider.region}:',
+                    Ref: 'AWS::AccountId',
+                    ':parameter/novellia/cdon/*',
+                  ],
+                ],
+            }
+          - {
+              'Fn::Join':
+                [
+                  '',
+                  [
+                    'arn:aws:ssm:${self:provider.region}:',
+                    Ref: 'AWS::AccountId',
+                    ':parameter/novellia/ongoing/*',
+                  ],
+                ],
+            }
+          - {
+              'Fn::Join':
+                [
+                  '',
+                  [
+                    'arn:aws:ssm:${self:provider.region}:',
+                    Ref: 'AWS::AccountId',
+                    ':parameter/novellia/slack/*',
+                  ],
+                ],
+            }
