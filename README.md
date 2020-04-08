@@ -1,21 +1,27 @@
 # CDON/Ongoing Delivery Note Sync
+
 Fetches delivery notes for pending orders in CDON Marketplace and posts them to the corresponding orders in Ongoing WMS.
 
 ### Run locally
+
 1. Rename `config.example.js` and replace the values/set env vars.
+
 ```
 cp config.example.js config.js
 ```
+
 2. Run `npm install`.
 3. Run `node index.js`.
 
 ### Deploy as AWS Lambda
+
 1. Create AWS account
 2. Create SSM Parameter Store parameters (See SSM Parameter Store)
 3. Edit `serverless.yml` to use your values
 4. Run `sls deploy`
 
 #### SSM Parameter Store
+
 Make sure aws-cli is installed.
 
 ```
