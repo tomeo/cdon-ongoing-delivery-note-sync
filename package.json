@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "format": "prettier-eslint --write \"lib/**/*.js\" \"./index.js\" \"./config.js\" \"./sync.js\" \"./handler.js\"",
+    "format": "prettier --write \"**/*.+(js|md|yml|yaml)\"",
     "start": "node index.js"
   },
   "author": "Tommy Ivarsson",
@@ -14,7 +14,7 @@
     "axios": "^0.19.0"
   },
   "devDependencies": {
-    "eslint": "^6.6.0",
+    "eslint": "^6.8.0",
     "prettier-eslint-cli": "^5.0.0",
     "serverless-iam-roles-per-function": "^2.0.2"
   }
