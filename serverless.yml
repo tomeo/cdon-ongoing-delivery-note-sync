@@ -2,7 +2,6 @@ service: cdon-ongoing-delivery-note-sync
 
 plugins:
   - serverless-iam-roles-per-function
-
 provider:
   name: aws
   runtime: nodejs10.x
