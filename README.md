@@ -17,8 +17,9 @@ cp config.example.js config.js
 
 1. Create AWS account
 2. Create SSM Parameter Store parameters (See SSM Parameter Store)
-3. Edit `serverless.yml` to use your values
-4. Run `serverless deploy`
+3. Install serverless v2.4.0 `npm install -g serverless@^2.4.0`
+4. Edit `serverless.yml` to use your values
+5. Run `serverless deploy`
 
 #### SSM Parameter Store
 
