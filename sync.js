@@ -24,9 +24,7 @@ const handleOrder = async (
   const fileName = `CDON.${order.OrderId}.pdf`;
   const files = await ongoingClient.orderFiles(order.OngoingId);
 
-  if (hasFile(files, fileName)) {
-    logger.log(`Order ${order.OrderId} HAS file ${fileName}`);
-  } else {
+  if (!hasFile(files, fileName)) {
     logger.log(
       `Order ${order.OrderId} DOES NOT have file ${fileName}`,
     );
@@ -63,7 +61,8 @@ const sync = async (cdonSettings, ongoingSettings, slackSettings) => {
     `There are currently ${cdonOrders.length} pending CDON orders.`,
   );
 
-  const mergedOrders = mergeOrders(cdonOrders, ongoingOrders);
+  const mergedOrders = mergeOrders(cdonOrders, ongoingOrders).filter(o => o.OngoingId);
+
   await Promise.all(
     mergedOrders.map(order =>
       handleOrder(logger, order, cdonClient, ongoingClient),
